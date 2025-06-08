@@ -1,0 +1,50 @@
+#lang racket
+
+(require rackunit)
+(require "lexer.rkt")
+(require "parser.rkt")
+(require "datatypes.rkt")
+
+
+
+
+
+
+(define program
+      "
+       { 
+       x = ((list ((a) (3) (9.235))));
+       x[98][9][0] = (2);
+       {
+       a;
+       int x = (0);
+       if (false) then {
+           if ((3) xor (2))
+           then
+           {/=\\(\"kal\");};
+       } else {int y = ((9));};
+       };
+
+       char ch = (\"p\");
+       
+       {a;b;c;};
+
+       list_of list_of int func f (int a, string b, bool e)
+       {
+           int a = (list((3)(3)(4)));
+           a[not(4)];
+       };
+
+       while ((string-append (\"a\") (\" bc\")) != (\"a bc\")){
+          string-length (\"email: \");
+       };
+       
+       }")
+
+(define input (open-input-string program))
+
+
+(define p (open-input-string program))
+
+(full-parser (lex-this my-lexer input))
+

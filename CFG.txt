@@ -1,0 +1,62 @@
+SCOPE → { EXPS }
+EXPS -> epsilon | NEEXPS
+NEEXPS -> EXP; | EXP;NEEXPS # removed parantheses, ok or not?
+ARGS -> PAREXP | PAREXP ARGS
+PARAMS -> TYPEVAR | TYPEVAR, PARAMS
+TYPEVAR -> TYPE ID
+EXP → 
+       TYPEVAR
+     | TYPEVAR = PAREXP
+     | ID = PAREXP 	
+     | ID
+     | FLOAT
+     | INT # don't have NUM anymore, replaced with FLOAT and INT
+     | BOOL
+     | STRING
+     | NULL
+     | FUNCDEF
+     | CALL
+     | if PAREXP then SCOPE else SCOPE
+     | if PAREXP then SCOPE
+     | while PAREXP  SCOPE
+     | cons PAREXP  PAREXP 
+     | append PAREXP  PAREXP 
+     | car PAREXP                                                                                              
+     | cdr PAREXP 
+     | substring PAREXP  PAREXP  PAREXP 
+     | string-append PAREXP  PAREXP 
+     | string-length PAREXP 
+     | string-at PAREXP  PAREXP 
+     | string-set PAREXP  PAREXP  PAREXP 
+     | LISTEXP
+     | PRINT PAREXP 
+     | PAREXP < PAREXP 
+     | PAREXP > PAREXP 
+     | PAREXP == PAREXP 
+     | PAREXP <= PAREXP 
+     | PAREXP >= PAREXP 
+     | PAREXP != PAREXP 
+     | PAREXP and PAREXP 
+     | PAREXP or PAREXP 
+     | PAREXP xor PAREXP 
+     | not PAREXP 
+     | PAREXP / PAREXP 
+     | PAREXP // PAREXP 
+     | PAREXP % PAREXP 
+     | PAREXP + PAREXP 
+     | PAREXP * PAREXP 
+     | PAREXP - PAREXP 
+     | PAREXP & PAREXP 
+     | PAREXP | PAREXP 
+     | PAREXP << PAREXP 
+     | PAREXP >> PAREXP 
+     | ~ PAREXP 
+     | - PAREXP 
+     | EXP [EXP]
+     | EXP [EXP] = PAREXP
+     | SCOPE
+     | PAREXP
+PAREXP -> (EXP)
+FUNCDEF -> TYPE FUNC ID () SCOPE | TYPE FUNC ID ( PARAMS ) SCOPE
+CALL -> ID () | ID (ARGS)
+LISTEXP -> LIST () | LIST (ARGS)
