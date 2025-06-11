@@ -70,4 +70,41 @@
   (a-LISTEXP (args exps?))
 )
 
+
+
+; expression values 
+
+(define-datatype expval expval?
+ (num-val (num number?))
+ (bool-val (bool boolean?))
+ (proc-val (proc proc?))
+ (ref-val (int integer?)))
+
+
+ ;expvals to their values
+
+ (define expval->num
+ (lambda (val) (cases expval val
+    (num-val (num) num)
+    (else (report-expval-extractor-error! "number")))))
+
+(define expval->bool
+ (lambda (val) (cases expval val
+    (bool-val (bool) bool)
+    (else (report-expval-extractor-error! "boolean")))))
+
+(define expval->proc
+ (lambda (val) (cases expval val
+    (proc-val (proc) (proc))
+    (else (report-expval-extractor-error! "proc")))))
+
+(define expval->ref
+ (lambda (val) (cases expval val
+    (ref-val (int) int)
+    (else (report-expval-extractor-error! "reference")))))
+
+
+
+
+
 (provide (all-defined-out))
