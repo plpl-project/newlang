@@ -8,15 +8,18 @@
 
 (define value-of-program
  (lambda (pgm) (cases prog pgm
-    (a-program (scp) (value-of (scope-exp scp) (init-env))))))
+    (a-program (scp)
+               (val-env->val (value-of (scope-exp scp) (init-env)))))))
 
 
 
 ; expression, environment -> expval, environment
 (define value-of 
  (lambda (expr env) (cases expression expr
+    (scope-exp (scp)
+      (value-of-exps (scope->exps scp) env))                  
     (var-def-exp (tv) 
-      (a-val-env (num-val 1001) env)) 
+      (a-val-env (num-val 1001) env)) ; value can be anything
     (var-def-assign-exp (tp-var exp) 
         (let* ((var (typevar->var tp-var)) (ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve))) 
       (a-val-env val (extend-environment var val new-env))))
@@ -39,7 +42,16 @@
     (else (report-invalid-expression!))))
   )
 
+(define value-of-exps
+  (lambda (es env) (cases exps es
+    (empty-exps () (a-val-env (num-val 1002) env)) ; value can be anything
+    (nonempty-exps (curexp rest-exps) 
+        (let* ((ve (value-of curexp env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
+          (if (empty-exps? rest-exps) 
+              (a-val-env val new-env) 
+              (value-of-exps rest-exps new-env)))))))
 
-(value-of (primary-string-exp "my string") (init-env))
+
+;(value-of (primary-string-exp "my string") (init-env))
 
 (provide (all-defined-out))

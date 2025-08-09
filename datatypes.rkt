@@ -163,5 +163,16 @@
     (a-val-env (val env) env)
     (else (report-extractor-error! "val-env")))))
 
+(define scope->exps
+  (lambda (scp) (cases scope scp
+    (a-scope (es) es)
+    (else (report-extractor-error! "scope")))))
+
+
+; helpers
+(define empty-exps? 
+  (lambda (input) (cases exps input
+  (empty-exps () #t)
+  (else #f))))
 
 (provide (all-defined-out))
