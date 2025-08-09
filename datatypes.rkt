@@ -5,6 +5,7 @@
 
 ; error handling
 (define (report-expval-extractor-error! type) (eopl:error 'invalid-value "invalid value cast to ~s" type))
+(define (report-extractor-error! type) (eopl:error 'invalid-value "invalid value to extract from ~s" type))
 
 
 ; AST types
@@ -96,6 +97,11 @@
              (body expression?)
              (env environment?)))
 
+(define-datatype val-env val-env?
+  (a-val-env (value expval?)
+             (environ environment?))
+  )
+
 
 
 ; expression values 
@@ -129,8 +135,27 @@
     (ref-val (int) int)
     (else (report-expval-extractor-error! "reference")))))
 
+;extractor
 
+(define typevar->var 
+  (lambda (tv) (cases typevar tv
+    (a-typevar (type var) var)
+    (else (report-extractor-error! "typevar")))))
 
+(define typevar->type 
+  (lambda (tv) (cases typevar tv
+    (a-typevar (type var) type)
+    (else (report-extractor-error! "typevar")))))
+
+(define val-env->val 
+  (lambda (input) (cases val-env input
+    (a-val-env (val env) val)
+    (else (report-extractor-error! "val-env")))))
+
+(define val-env->env 
+  (lambda (input) (cases val-env input
+    (a-val-env (val env) env)
+    (else (report-extractor-error! "val-env")))))
 
 
 (provide (all-defined-out))
