@@ -109,6 +109,7 @@
 (define-datatype expval expval?
  (num-val (num number?))
  (bool-val (bool boolean?))
+ (string-val (str string?))
  (proc-val (proc proc?))
  (ref-val (int integer?)))
 
@@ -124,6 +125,11 @@
  (lambda (val) (cases expval val
     (bool-val (bool) bool)
     (else (report-expval-extractor-error! "boolean")))))
+
+(define expval->string
+ (lambda (val) (cases expval val
+    (string-val (str) str)
+    (else (report-expval-extractor-error! "string")))))
 
 (define expval->proc
  (lambda (val) (cases expval val
