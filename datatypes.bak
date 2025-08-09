@@ -2,23 +2,12 @@
 (require eopl)
 (require (lib "eopl.ss" "eopl"))
 
-
-; error handling
-(define (report-expval-extractor-error! expected-type)
-  (error 'expval
-         (format "Expected a ~a value, but got something else." expected-type)))
-
-; AST types
-
 (define-datatype typevar typevar?
   (a-typevar (type string?) (var string?)))
 
 (define-datatype params params?
   (empty-params)
   (nonempty-params (ne-param typevar?) (rest params?)))
-
-(define-datatype prog prog?
-  (a-program (scope scope?)))
 
 (define-datatype scope scope?
   (a-scope (exps exps?)))
@@ -83,28 +72,12 @@
 
 
 
-; additional types
-
-(define-datatype environment environment?
-  (empty-environment)
-  (extend-environment (saved-var string?)
-                      (val expval?)
-                      (saved-env environment?)))
- 
-
-(define-datatype proc proc?
-  (procedure (params (list-of string?)) ; not sure
-             (body exp?)
-             (env environment?)))
-
-
-
 ; expression values 
 
 (define-datatype expval expval?
  (num-val (num number?))
  (bool-val (bool boolean?))
- (proc-val (proc proc?))
+ ;(proc-val (proc proc?))
  (ref-val (int integer?)))
 
 

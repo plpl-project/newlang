@@ -9,15 +9,13 @@
 
 (define full-parser
   (parser 
-   (start progexp)
+   (start scopeexp)
    (end EOF)
    (tokens op-tokens value-tokens)
    (error (lambda (tok-ok? tok-name tok-val)
             (error 'parse "Parse error at ~a: ~a" tok-name tok-val)))
    
    (grammar
-    (progexp
-     ((scopeexp) (a-program $1)))
     (parexp
      ((LPAREN exp RPAREN) $2))
     (scopeexp
