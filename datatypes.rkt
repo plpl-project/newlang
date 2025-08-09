@@ -4,9 +4,8 @@
 
 
 ; error handling
-(define (report-expval-extractor-error! expected-type)
-  (error 'expval
-         (format "Expected a ~a value, but got something else." expected-type)))
+(define (report-expval-extractor-error! type) (eopl:error 'invalid-value "invalid value cast to ~s" type))
+
 
 ; AST types
 
@@ -25,56 +24,56 @@
 
 (define-datatype exps exps?
   (empty-exps)
-  (nonempty-exps (curexp exp?) (rest exps?)))
+  (nonempty-exps (curexp expression?) (rest exps?)))
 
-(define-datatype exp exp?
+(define-datatype expression expression?
   (scope-exp (scp scope?))
   (var-def-exp (val typevar?))
-  (var-def-assign-exp (var typevar?) (value exp?))
-  (var-assign-exp (var-name string?) (value exp?))
+  (var-def-assign-exp (var typevar?) (value expression?))
+  (var-assign-exp (var-name string?) (value expression?))
   (var-exp (var-name string?))
   (primary-num-exp (val number?))
   (primary-bool-exp (val symbol?))
   (primary-string-exp (val string?))
   (func-def-exp (type string?) (func-name string?) (params params?) (scope scope?))
   (func-call-exp (func-name string?) (args exps?))
-  (if-then-else-exp (cond exp?) (then-st scope?) (else-st scope?))
-  (while-exp (cond exp?) (body scope?))
-  (cons-exp (e1 exp?) (e2 exp?))
-  (append-exp (e1 exp?) (e2 exp?))
-  (car-exp (e exp?))
-  (cdr-exp (e exp?))
-  (substr-exp (e1 exp?) (e2 exp?) (e3 exp?))
-  (str-append-exp (e1 exp?) (e2 exp?))
-  (str-len-exp (el exp?))
-  (STRING-AT-exp (e1 exp?) (e2 exp?))
-  (STRING-SET-exp (e1 exp?) (e2 exp?) (e3 exp?))
+  (if-then-else-exp (cond expression?) (then-st scope?) (else-st scope?))
+  (while-exp (cond expression?) (body scope?))
+  (cons-exp (e1 expression?) (e2 expression?))
+  (append-exp (e1 expression?) (e2 expression?))
+  (car-exp (e expression?))
+  (cdr-exp (e expression?))
+  (substr-exp (e1 expression?) (e2 expression?) (e3 expression?))
+  (str-append-exp (e1 expression?) (e2 expression?))
+  (str-len-exp (el expression?))
+  (STRING-AT-exp (e1 expression?) (e2 expression?))
+  (STRING-SET-exp (e1 expression?) (e2 expression?) (e3 expression?))
   (LIST-EXP (el exps?))
   (BOO-EXP)
-  (PRINT-BOO (left exp?))
-  (LESSTHAN (left exp?) (right exp?))
-  (GREATERTHAN (left exp?) (right exp?))
-  (DOUBLEEQ (left exp?) (right exp?))
-  (LESSEQ (left exp?) (right exp?))
-  (GREATEREQ (left exp?) (right exp?))
-  (NOTEQ (left exp?) (right exp?))  
-  (FDIVISION (left exp?) (right exp?))
-  (QDIVISION (left exp?) (right exp?))
-  (ADDITION (left exp?) (right exp?))
-  (SUBTRACTION (left exp?) (right exp?))
-  (MULTIPLY (left exp?) (right exp?))
-  (REMAINDER (left exp?) (right exp?))
-  (BINAND (left exp?) (right exp?))
-  (BINOR (left exp?) (right exp?))
-  (BINLSHIFT (left exp?) (right exp?))
-  (BINRSHIFT (left exp?) (right exp?))
-  (BNEGATION (left exp?))
-  (NOTNOT (left exp?))
-  (ANDOP (left exp?) (right exp?))
-  (OROP (left exp?) (right exp?))
-  (XOROP (left exp?) (right exp?))
-  (return-arr-val (a-list exp?) (index exp?))
-  (assign-arr-val (a-list exp?) (index exp?) (value exp?)))
+  (PRINT-BOO (left expression?))
+  (LESSTHAN (left expression?) (right expression?))
+  (GREATERTHAN (left expression?) (right expression?))
+  (DOUBLEEQ (left expression?) (right expression?))
+  (LESSEQ (left expression?) (right expression?))
+  (GREATEREQ (left expression?) (right expression?))
+  (NOTEQ (left expression?) (right expression?))  
+  (FDIVISION (left expression?) (right expression?))
+  (QDIVISION (left expression?) (right expression?))
+  (ADDITION (left expression?) (right expression?))
+  (SUBTRACTION (left expression?) (right expression?))
+  (MULTIPLY (left expression?) (right expression?))
+  (REMAINDER (left expression?) (right expression?))
+  (BINAND (left expression?) (right expression?))
+  (BINOR (left expression?) (right expression?))
+  (BINLSHIFT (left expression?) (right expression?))
+  (BINRSHIFT (left expression?) (right expression?))
+  (BNEGATION (left expression?))
+  (NOTNOT (left expression?))
+  (ANDOP (left expression?) (right expression?))
+  (OROP (left expression?) (right expression?))
+  (XOROP (left expression?) (right expression?))
+  (return-arr-val (a-list expression?) (index expression?))
+  (assign-arr-val (a-list expression?) (index expression?) (value expression?)))
   ;() CONST
 
 (define-datatype LISTEXP LISTEXP?
@@ -94,7 +93,7 @@
 
 (define-datatype proc proc?
   (procedure (params (list-of string?)) ; not sure
-             (body exp?)
+             (body expression?)
              (env environment?)))
 
 
