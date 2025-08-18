@@ -46,7 +46,11 @@
       "
        { 
        int x = (0);
+       int func f(int a, string b, bool e){
+       (10) - (2);
+       };
        (42) - (542);
+       f((4) (\"salamb\") (false));
        }")
 
 (define input (open-input-string simple-program))

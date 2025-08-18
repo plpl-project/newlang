@@ -36,7 +36,7 @@
   (primary-num-exp (val number?))
   (primary-bool-exp (val symbol?))
   (primary-string-exp (val string?))
-  (func-def-exp (type string?) (func-name string?) (params params?) (scope scope?))
+  (func-def-exp (type string?) (func-name string?) (params params?) (body-scp scope?))
   (func-call-exp (func-name string?) (args exps?))
   (if-then-else-exp (cond expression?) (then-st scope?) (else-st scope?))
   (while-exp (cond expression?) (body scope?))
@@ -93,15 +93,19 @@
  
 
 (define-datatype proc proc?
-  (procedure (params (list-of string?)) ; not sure
-             (body expression?)
-             (env environment?)))
+  (a-proc (params (list-of string?)) ; not sure
+             (body scope?)
+             (saved-env environment?)))
 
 (define-datatype val-env val-env?
   (a-val-env (value expval?)
-             (environ environment?))
+             (env environment?))
   )
 
+(define-datatype vals-env vals-env?
+  (a-vals-env (values (list-of expval?))
+             (env environment?))
+  )
 
 
 ; expression values 
@@ -110,7 +114,7 @@
  (num-val (num number?))
  (bool-val (bool boolean?))
  (string-val (str string?))
- (proc-val (proc proc?))
+ (proc-val (prc proc?))
  (ref-val (int integer?)))
 
 
@@ -133,7 +137,7 @@
 
 (define expval->proc
  (lambda (val) (cases expval val
-    (proc-val (proc) (proc))
+    (proc-val (proc) proc)
     (else (report-expval-extractor-error! "proc")))))
 
 (define expval->ref
@@ -163,6 +167,16 @@
     (a-val-env (val env) env)
     (else (report-extractor-error! "val-env")))))
 
+(define vals-env->vals 
+  (lambda (input) (cases vals-env input
+    (a-vals-env (vals env) vals)
+    (else (report-extractor-error! "vals-env")))))
+
+(define vals-env->env 
+  (lambda (input) (cases vals-env input
+    (a-vals-env (val env) env)
+    (else (report-extractor-error! "vals-env")))))
+
 (define scope->exps
   (lambda (scp) (cases scope scp
     (a-scope (es) es)
@@ -174,5 +188,13 @@
   (lambda (input) (cases exps input
   (empty-exps () #t)
   (else #f))))
+
+;convertor 
+
+  ; from params to list of variable names
+(define params->list-of-strings
+  (lambda (prms) (cases params prms
+  (empty-params () '())
+  (nonempty-params (ne-param rest) (cons (typevar->var ne-param) (params->list-of-strings rest)))))) 
 
 (provide (all-defined-out))

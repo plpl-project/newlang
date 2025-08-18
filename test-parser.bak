@@ -4,6 +4,7 @@
 (require "lexer.rkt")
 (require "parser.rkt")
 (require "datatypes.rkt")
+(require "boo-lang.rkt")
 
 
 
@@ -44,14 +45,23 @@
 (define simple-program
       "
        { 
-       int x = 0;
-       
+       int x = (0);
+       int f(){
+       return (10);
+       }
+       (42) - (542);
+       void g(int x, bool f){
+       x = ((x) + (1));
+       }
        }")
 
-(define input (open-input-string program))
+(define input (open-input-string simple-program))
 
 
-(define p (open-input-string program))
+;(define p (open-input-string program))
 
-(full-parser (lex-this my-lexer input))
+(define AST (full-parser (lex-this my-lexer input)))
+
+(value-of-program AST)
+
 
