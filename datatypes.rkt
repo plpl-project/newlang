@@ -87,8 +87,12 @@
 
 (define-datatype environment environment?
   (empty-environment)
-  (extend-environment (saved-var string?)
+  (extended-environment (saved-var string?)
                       (val expval?)
+                      (saved-env environment?))
+  (proc-environment (saved-var string?) ; proc name
+                      (proc-params (list-of string?))
+                      (proc-body-scp  scope?) 
                       (saved-env environment?)))
  
 

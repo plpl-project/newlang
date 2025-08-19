@@ -45,7 +45,7 @@
 (define simple-program
       "
        { 
-       int x = (0);
+       float x = (0);
        int func f(int a, string b, bool e){
        (10) - (2);
        };

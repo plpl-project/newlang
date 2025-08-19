@@ -14,8 +14,8 @@
 (define value-of-program
  (lambda (pgm) (cases prog pgm
     (a-program (scp)
-               (val-env->val (value-of (scope-exp scp) (init-env)))))))
-              ;  (value-of (scope-exp scp) (init-env))))))
+              ;  (val-env->val (value-of (scope-exp scp) (init-env))))))) 
+               (value-of (scope-exp scp) (init-env)))))) ;when you want to see produced environment too
 
 
 
@@ -37,8 +37,8 @@
     (primary-string-exp (str)
       (a-val-env (string-val str) env))
     (func-def-exp (type func-name params body-scp) 
-        (let* ((param-list (params->list-of-strings params)) 
-              (prc (a-proc param-list body-scp env)) (p-val (proc-val prc)) (new-env (extend-env func-name p-val env))) 
+        (let* ((param-list (params->list-of-strings params)) (new-env (proc-env func-name param-list body-scp env))
+              (prc (a-proc param-list body-scp new-env)) (p-val (proc-val prc))) 
       (a-val-env p-val new-env)))
     (func-call-exp (func-name args) 
         (let* ((p-val (apply-env func-name env)) (vse (value-of-args args env)) 
