@@ -29,8 +29,8 @@
     (var-def-assign-exp (tp-var exp) 
         (let* ((var (typevar->var tp-var)) (ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve))) 
       (a-val-env val (extend-env var val new-env))))
-    (var-assign-exp (var-name value) 
-      (a-val-env (num-val 1002) (extend-env var-name value env))) ;TODO change this after memory gets ready
+    (var-assign-exp (var-name exp) (let* ((ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
+      (a-val-env (num-val 1002) (extend-env var-name val new-env)))) ;TODO change this after memory gets ready
     (var-exp (var-name)
       (a-val-env (apply-env var-name env) env))  
     (primary-num-exp (num)
