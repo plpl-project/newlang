@@ -44,14 +44,16 @@
 
 (define simple-program
       "
-       { 
+   { 
        float x = (0);
        int func f(int a, string b, bool e){
-       (10) - (2);
+          (10) - (a);
        };
        (42) - (542);
        f((4) (\"salamb\") (false));
-       }")
+     
+   }       
+")
 
 (define input (open-input-string simple-program))
 
