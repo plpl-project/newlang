@@ -49,6 +49,12 @@
               (new-env (vals-env->env vse)) (vals (vals-env->vals vse)) 
               (result-val (apply-procedure (expval->proc p-val) vals))) 
       (a-val-env result-val new-env)))
+    (if-then-else-exp (cond then-sp else-sp) 
+        (let* ((cond-ve (value-of cond env)) (cond-val (val-env->val cond-ve)) (new-env (val-env->env cond-ve))
+                (cond-bool (expval->bool cond-val)) (then-exps (scope->exps then-sp)) (else-exps (scope->exps else-sp))
+                (result-ve (if cond-bool (value-of-exps then-exps new-env) (value-of-exps else-exps new-env))) 
+                (result-val (val-env->val result-ve))) 
+      (a-val-env result-val new-env)))
                       
     (SUBTRACTION (exp1 exp2)
         (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 

@@ -47,12 +47,17 @@
    { 
        float x = (0);
        int func f(int a, string b, bool e){
-          (10) - (a);
+          if ((e)) then {
+              (a);
+          } else {
+              f(((a) - (10)) (b) (true));
+          };
        };
        (42) - (542);
        f((4) (\"salamb\") (false));
        x = (1);
-       f((x) (\" \") (true));
+       f((x) (\" \") (false));
+
      
    }       
 ")
