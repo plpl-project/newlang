@@ -14,16 +14,16 @@
 (define value-of-program
  (lambda (pgm) (cases prog pgm
     (a-program (scp)
-              ;  (val-env->val (value-of (scope-exp scp) (init-env))))))) 
-               (value-of (scope-exp scp) (init-env)))))) ;when you want to see produced environment too
+               (val-env->val (value-of (scope-exp scp) (init-env))))))) 
 
 
 
 ; expression, environment -> expval, environment
 (define value-of 
  (lambda (expr env) (cases expression expr
-    (scope-exp (scp)
-      (value-of-exps (scope->exps scp) env))                  
+    (scope-exp (scp) 
+        (let ((ve (value-of-exps (scope->exps scp) env)))
+      (a-val-env (val-env->val ve) env)))                  
     (var-def-exp (tv) 
       (a-val-env (num-val 1001) env)) ; value can be anything
     (var-def-assign-exp (tp-var exp) 
@@ -56,8 +56,13 @@
                 (result-val (val-env->val result-ve))) 
       (a-val-env result-val new-env)))
     (while-exp (condition body-scp) 
-        (let* ((body-exps (scope->exps body-scp)))
-      (value-of-while condition body-exps env)))
+        (let* ((body-exps (scope->exps body-scp)) (ve (value-of-while condition body-exps env)))
+      (a-val-env (val-env->val ve) env)))  
+    (PRINT-BOO (e) 
+        (let* ((ve (value-of e env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
+          (begin
+            (displayln (expval->printable val))
+      ve)))
                       
     (SUBTRACTION (exp1 exp2)
         (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 

@@ -59,8 +59,11 @@
        f((x) (\" \") (false));
        bool c = (true);
        while(c){
-           c = (true);
+           int x = ((x) - (12));
+           /=\\(x);
+           c = (false);
        };
+       /=\\(x);
 
      
    }       

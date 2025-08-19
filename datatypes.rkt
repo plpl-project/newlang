@@ -149,6 +149,16 @@
     (ref-val (int) int)
     (else (report-expval-extractor-error! "reference")))))
 
+
+(define expval->printable
+ (lambda (val) (cases expval val
+    (num-val (num) num)
+    (bool-val (bool) bool)
+    (string-val (str) str)
+    (proc-val (proc) proc)
+    (ref-val (int) int)
+    (else val))))
+
 ;extractor
 
 (define typevar->var 
@@ -200,5 +210,7 @@
   (lambda (prms) (cases params prms
   (empty-params () '())
   (nonempty-params (ne-param rest) (cons (typevar->var ne-param) (params->list-of-strings rest)))))) 
+
+
 
 (provide (all-defined-out))
