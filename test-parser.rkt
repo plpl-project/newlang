@@ -57,6 +57,10 @@
        f((4) (\"salamb\") (false));
        x = (1);
        f((x) (\" \") (false));
+       bool c = (true);
+       while(c){
+           c = (true);
+       };
 
      
    }       

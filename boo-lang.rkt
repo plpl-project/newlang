@@ -30,7 +30,7 @@
         (let* ((var (typevar->var tp-var)) (ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve))) 
       (a-val-env val (extend-env var val new-env))))
     (var-assign-exp (var-name exp) (let* ((ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
-      (a-val-env (num-val 1002) (extend-env var-name val new-env)))) ;TODO change this after memory gets ready
+      (a-val-env (num-val 1003) (extend-env var-name val new-env)))) ;TODO change this after memory gets ready
     (var-exp (var-name)
       (a-val-env (apply-env var-name env) env))  
     (primary-num-exp (num)
@@ -49,12 +49,15 @@
               (new-env (vals-env->env vse)) (vals (vals-env->vals vse)) 
               (result-val (apply-procedure (expval->proc p-val) vals))) 
       (a-val-env result-val new-env)))
-    (if-then-else-exp (cond then-sp else-sp) 
-        (let* ((cond-ve (value-of cond env)) (cond-val (val-env->val cond-ve)) (new-env (val-env->env cond-ve))
+    (if-then-else-exp (condition then-sp else-sp) 
+        (let* ((cond-ve (value-of condition env)) (cond-val (val-env->val cond-ve)) (new-env (val-env->env cond-ve))
                 (cond-bool (expval->bool cond-val)) (then-exps (scope->exps then-sp)) (else-exps (scope->exps else-sp))
                 (result-ve (if cond-bool (value-of-exps then-exps new-env) (value-of-exps else-exps new-env))) 
                 (result-val (val-env->val result-ve))) 
       (a-val-env result-val new-env)))
+    (while-exp (condition body-scp) 
+        (let* ((body-exps (scope->exps body-scp)))
+      (value-of-while condition body-exps env)))
                       
     (SUBTRACTION (exp1 exp2)
         (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
@@ -83,6 +86,14 @@
         (let* ((ve (value-of curexp env)) (val (val-env->val ve)) (new-env (val-env->env ve))
                 (vse (value-of-args rest-exps new-env)) (rest-vals (vals-env->vals vse)) (last-env (vals-env->env vse)))
           (a-vals-env (cons val rest-vals) last-env))))))
+
+(define value-of-while
+  (lambda (cond-exp es env) (let* 
+    ( (cond-ve (value-of cond-exp env)) 
+      (cond-val (val-env->val cond-ve)) (new-env1 (val-env->env cond-ve)) (cond-bool (expval->bool cond-val))) 
+    (if cond-bool 
+      (let* ((ve (value-of-exps es new-env1)) (new-env2 (val-env->env ve))) (value-of-while cond-exp es new-env2)) 
+      (a-val-env (num-val 1004) new-env1)))))
 
 (define apply-procedure
  (lambda (pr vals) (cases proc pr
