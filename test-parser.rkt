@@ -78,6 +78,21 @@
    }       
 ")
 
+(define test-arithmetic-logic-ops
+  "{
+    float i = (23.5);
+    float p = (240);
+
+    float result = (((i) + (p)) * (2));
+
+    int a = (10);
+    int b = (9);
+    int abandb = ((10) & (9));
+
+    (not ((a) < (b)));
+    
+  }")
+
 (define input (open-input-string simple-program))
 
 
