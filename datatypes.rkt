@@ -45,11 +45,12 @@
   (car-exp (e expression?))
   (cdr-exp (e expression?))
   (substr-exp (e1 expression?) (e2 expression?) (e3 expression?))
-  (str-append-exp (e1 expression?) (e2 expression?))
-  (str-len-exp (el expression?))
+  (str-append-exp (e1 expression?) (e2 expression?)) 
+  (str-len-exp (el expression?)) 
   (STRING-AT-exp (e1 expression?) (e2 expression?))
   (STRING-SET-exp (e1 expression?) (e2 expression?) (e3 expression?))
-  (LIST-EXP (el exps?))
+  ;(LIST-EXP (el (list-of expression?)))  ; list of expressions
+  (LIST-EXP (el exps?)) 
   (BOO-EXP)
   (PRINT-BOO (left expression?))
   (LESSTHAN (left expression?) (right expression?))
@@ -73,8 +74,8 @@
   (ANDOP (left expression?) (right expression?))
   (OROP (left expression?) (right expression?))
   (XOROP (left expression?) (right expression?))
-  (return-arr-val (a-list expression?) (index expression?))
-  (assign-arr-val (a-list expression?) (index expression?) (value expression?)))
+  (return-arr-val (a-list expression?) (index expression?)) 
+  (assign-arr-val (a-list expression?) (index expression?) (value expression?))) 
   ;() CONST
 
 (define-datatype LISTEXP LISTEXP?
@@ -116,7 +117,10 @@
  (bool-val (bool boolean?))
  (string-val (str string?))
  (proc-val (prc proc?))
- (ref-val (int integer?)))
+ (ref-val (int integer?))
+ (list-val (lst (list-of expval?)))
+ (boo-val))
+
 
 
  ;expvals to their values
@@ -147,6 +151,18 @@
     (else (report-expval-extractor-error! "reference")))))
 
 
+<<<<<<< HEAD
+(define expval->list
+ (lambda (val) (cases expval val
+    (list-val (lst) lst)
+    (else (report-expval-extractor-error! "list")))))
+
+(define expval->boo
+ (lambda (val) (cases expval val
+    (boo-val () 'boo)
+    (else (report-expval-extractor-error! "boo")))))
+
+=======
 (define expval->printable
  (lambda (val) (cases expval val
     (num-val (num) num)
@@ -155,6 +171,7 @@
     (proc-val (proc) proc)
     (ref-val (int) int)
     (else val))))
+>>>>>>> f9ebb5a007e61faaf7e833227b6aff1fde0ef45e
 
 ;extractor
 
