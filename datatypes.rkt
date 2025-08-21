@@ -151,7 +151,6 @@
     (else (report-expval-extractor-error! "reference")))))
 
 
-<<<<<<< HEAD
 (define expval->list
  (lambda (val) (cases expval val
     (list-val (lst) lst)
@@ -162,7 +161,6 @@
     (boo-val () 'boo)
     (else (report-expval-extractor-error! "boo")))))
 
-=======
 (define expval->printable
  (lambda (val) (cases expval val
     (num-val (num) num)
@@ -170,8 +168,9 @@
     (string-val (str) str)
     (proc-val (proc) proc)
     (ref-val (int) int)
+    (list-val (lst) lst) 
+    (boo-val () "null")
     (else val))))
->>>>>>> f9ebb5a007e61faaf7e833227b6aff1fde0ef45e
 
 ;extractor
 

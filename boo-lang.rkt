@@ -129,19 +129,19 @@
     (BOO-EXP ()
         (a-val-env (boo-val) env))
 
-    (PRINT-BOO (left)
-    (let* ((ve (value-of left env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
-      (begin
-        (display "BOO: ")
-        (cases expval val
-          (boo-val () (display "null"))
-          (num-val (n) (display n))
-          (bool-val (b) (display b))
-          (string-val (s) (display s))
-          (list-val (lst) (display lst))
-          (else (display val)))
-        (newline)
-        (a-val-env val new-env))))
+    ; (PRINT-BOO (left)
+    ; (let* ((ve (value-of left env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
+    ;   (begin
+    ;     (display "BOO: ")
+    ;     (cases expval val
+    ;       (boo-val () (display "null"))
+    ;       (num-val (n) (display n))
+    ;       (bool-val (b) (display b))
+    ;       (string-val (s) (display s))
+    ;       (list-val (lst) (display lst))
+    ;       (else (display val)))
+    ;     (newline)
+    ;     (a-val-env val new-env))))
 
 
     ;; LIST-EXP - create a list from exps structure
