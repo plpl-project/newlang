@@ -69,6 +69,15 @@
    }       
 ")
 
+(define sp
+      "
+   { 
+       int x = (0);
+
+     
+   }       
+")
+
 (define input (open-input-string simple-program))
 
 

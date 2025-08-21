@@ -2,6 +2,8 @@
 
 (require "datatypes.rkt")
 (require "environment.rkt")
+(require "memory.rkt")
+
 (require (lib "eopl.ss" "eopl"))
 
 (define (report-invalid-expression!) (eopl:error 'invalid-expression "this expression is invalid in the current language!"))
@@ -9,7 +11,7 @@
 (define (report-too-many-args-error!) (eopl:error 'invalid-arity "Too many arguments provided."))
 
 
-
+(define mem (create-memory 1000))
 
 (define value-of-program
  (lambda (pgm) (cases prog pgm
@@ -25,14 +27,19 @@
         (let ((ve (value-of-exps (scope->exps scp) env)))
       (a-val-env (val-env->val ve) env)))                  
     (var-def-exp (tv) 
-      (a-val-env (num-val 1001) env)) ; value can be anything
-    (var-def-assign-exp (tp-var exp) 
-        (let* ((var (typevar->var tp-var)) (ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve))) 
-      (a-val-env val (extend-env var val new-env))))
-    (var-assign-exp (var-name exp) (let* ((ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
-      (a-val-env (num-val 1003) (extend-env var-name val new-env)))) ;TODO change this after memory gets ready
+        (let ((index (newref mem)))
+      (a-val-env (num-val index) (extend-env (typevar->var tv) index env)))) 
+    (var-def-assign-exp (tv exp) 
+        (let* ((var (typevar->var tv)) (ve (value-of exp env))
+               (val (val-env->val ve)) (new-env (val-env->env ve)) (index (newref-init mem val)))
+      (a-val-env val (extend-env var index env)))) 
+    (var-assign-exp (var-name exp) 
+        (let* ((ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve)) (index (apply-env var-name env))) (begin 
+      (assign mem index val)  
+      (a-val-env val new-env)))) 
     (var-exp (var-name)
-      (a-val-env (apply-env var-name env) env))  
+        (let* ((index (apply-env var-name env)) (val (get-val mem index)))
+      (a-val-env val env)))  
     (primary-num-exp (num)
       (a-val-env (num-val num) env))
     (primary-bool-exp (bval)
@@ -41,11 +48,13 @@
     (primary-string-exp (str)
       (a-val-env (string-val str) env))
     (func-def-exp (type func-name params body-scp) 
-        (let* ((param-list (params->list-of-strings params)) (new-env (proc-env func-name param-list body-scp env))
+        (let* ((param-list (params->list-of-strings params)) (index (newref mem))  (new-env (extend-env func-name index env))
               (prc (a-proc param-list body-scp new-env)) (p-val (proc-val prc))) 
-      (a-val-env p-val new-env)))
+            (begin 
+      (assign mem index p-val)
+      (a-val-env p-val new-env))))
     (func-call-exp (func-name args) 
-        (let* ((p-val (apply-env func-name env)) (vse (value-of-args args env)) 
+        (let* ((index (apply-env func-name env)) (p-val (get-val mem index)) (vse (value-of-args args env)) 
               (new-env (vals-env->env vse)) (vals (vals-env->vals vse)) 
               (result-val (apply-procedure (expval->proc p-val) vals))) 
       (a-val-env result-val new-env)))
@@ -111,8 +120,9 @@
   (lambda (vars vals env)(cond 
     ((empty? vars) (if (empty? vals) env (report-too-many-args-error!)))
     ((empty? vals) (report-too-few-args-error!))
-    (else (let ((cur-var (car vars)) (rest-vars (cdr vars)) (cur-val (car vals)) (rest-vals (cdr vals))) 
-      (extend-all rest-vars rest-vals (extend-env cur-var cur-val env)))))))
+    (else (let* ((cur-var (car vars)) (rest-vars (cdr vars)) (cur-val (car vals)) (rest-vals (cdr vals))
+                (index (newref-init mem cur-val))) 
+      (extend-all rest-vars rest-vals (extend-env cur-var index env)))))))
 
 
 (provide (all-defined-out))
