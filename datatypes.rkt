@@ -88,8 +88,12 @@
 
 (define-datatype environment environment?
   (empty-environment)
-  (extend-environment (saved-var string?)
+  (extended-environment (saved-var string?)
                       (val expval?)
+                      (saved-env environment?))
+  (proc-environment (saved-var string?) ; proc name
+                      (proc-params (list-of string?))
+                      (proc-body-scp  scope?) 
                       (saved-env environment?)))
  
 
@@ -150,6 +154,7 @@
     (else (report-expval-extractor-error! "reference")))))
 
 
+<<<<<<< HEAD
 (define expval->list
  (lambda (val) (cases expval val
     (list-val (lst) lst)
@@ -160,6 +165,16 @@
     (boo-val () 'boo)
     (else (report-expval-extractor-error! "boo")))))
 
+=======
+(define expval->printable
+ (lambda (val) (cases expval val
+    (num-val (num) num)
+    (bool-val (bool) bool)
+    (string-val (str) str)
+    (proc-val (proc) proc)
+    (ref-val (int) int)
+    (else val))))
+>>>>>>> f9ebb5a007e61faaf7e833227b6aff1fde0ef45e
 
 ;extractor
 
@@ -212,5 +227,7 @@
   (lambda (prms) (cases params prms
   (empty-params () '())
   (nonempty-params (ne-param rest) (cons (typevar->var ne-param) (params->list-of-strings rest)))))) 
+
+
 
 (provide (all-defined-out))

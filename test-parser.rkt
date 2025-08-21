@@ -44,14 +44,30 @@
 
 (define simple-program
       "
-       { 
-       int x = (0);
+   { 
+       float x = (0);
        int func f(int a, string b, bool e){
-       (10) - (2);
+          if ((e)) then {
+              (a);
+          } else {
+              f(((a) - (10)) (b) (true));
+          };
        };
        (42) - (542);
        f((4) (\"salamb\") (false));
-       }")
+       x = (1);
+       f((x) (\" \") (false));
+       bool c = (true);
+       while(c){
+           int x = ((x) - (12));
+           /=\\(x);
+           c = (false);
+       };
+       /=\\(x);
+
+     
+   }       
+")
 
 (define input (open-input-string simple-program))
 

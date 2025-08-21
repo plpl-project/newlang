@@ -14,21 +14,25 @@
 (define value-of-program
  (lambda (pgm) (cases prog pgm
     (a-program (scp)
-               (val-env->val (value-of (scope-exp scp) (init-env)))))))
-              ;  (value-of (scope-exp scp) (init-env))))))
+               (val-env->val (value-of (scope-exp scp) (init-env))))))) 
 
 
 
 ; expression, environment -> expval, environment
 (define value-of 
  (lambda (expr env) (cases expression expr
-    (scope-exp (scp)
-      (value-of-exps (scope->exps scp) env))                  
+    (scope-exp (scp) 
+        (let ((ve (value-of-exps (scope->exps scp) env)))
+      (a-val-env (val-env->val ve) env)))                  
     (var-def-exp (tv) 
       (a-val-env (num-val 1001) env)) ; value can be anything
     (var-def-assign-exp (tp-var exp) 
         (let* ((var (typevar->var tp-var)) (ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve))) 
-      (a-val-env val (extend-env var val new-env))))  
+      (a-val-env val (extend-env var val new-env))))
+    (var-assign-exp (var-name exp) (let* ((ve (value-of exp env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
+      (a-val-env (num-val 1003) (extend-env var-name val new-env)))) ;TODO change this after memory gets ready
+    (var-exp (var-name)
+      (a-val-env (apply-env var-name env) env))  
     (primary-num-exp (num)
       (a-val-env (num-val num) env))
     (primary-bool-exp (bval)
@@ -37,14 +41,28 @@
     (primary-string-exp (str)
       (a-val-env (string-val str) env))
     (func-def-exp (type func-name params body-scp) 
-        (let* ((param-list (params->list-of-strings params)) 
-              (prc (a-proc param-list body-scp env)) (p-val (proc-val prc)) (new-env (extend-env func-name p-val env))) 
+        (let* ((param-list (params->list-of-strings params)) (new-env (proc-env func-name param-list body-scp env))
+              (prc (a-proc param-list body-scp new-env)) (p-val (proc-val prc))) 
       (a-val-env p-val new-env)))
     (func-call-exp (func-name args) 
         (let* ((p-val (apply-env func-name env)) (vse (value-of-args args env)) 
               (new-env (vals-env->env vse)) (vals (vals-env->vals vse)) 
               (result-val (apply-procedure (expval->proc p-val) vals))) 
       (a-val-env result-val new-env)))
+    (if-then-else-exp (condition then-sp else-sp) 
+        (let* ((cond-ve (value-of condition env)) (cond-val (val-env->val cond-ve)) (new-env (val-env->env cond-ve))
+                (cond-bool (expval->bool cond-val)) (then-exps (scope->exps then-sp)) (else-exps (scope->exps else-sp))
+                (result-ve (if cond-bool (value-of-exps then-exps new-env) (value-of-exps else-exps new-env))) 
+                (result-val (val-env->val result-ve))) 
+      (a-val-env result-val new-env)))
+    (while-exp (condition body-scp) 
+        (let* ((body-exps (scope->exps body-scp)) (ve (value-of-while condition body-exps env)))
+      (a-val-env (val-env->val ve) env)))  
+    (PRINT-BOO (e) 
+        (let* ((ve (value-of e env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
+          (begin
+            (displayln (expval->printable val))
+      ve)))
                       
     (SUBTRACTION (exp1 exp2)
         (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
@@ -216,6 +234,14 @@
         (let* ((ve (value-of curexp env)) (val (val-env->val ve)) (new-env (val-env->env ve))
                 (vse (value-of-args rest-exps new-env)) (rest-vals (vals-env->vals vse)) (last-env (vals-env->env vse)))
           (a-vals-env (cons val rest-vals) last-env))))))
+
+(define value-of-while
+  (lambda (cond-exp es env) (let* 
+    ( (cond-ve (value-of cond-exp env)) 
+      (cond-val (val-env->val cond-ve)) (new-env1 (val-env->env cond-ve)) (cond-bool (expval->bool cond-val))) 
+    (if cond-bool 
+      (let* ((ve (value-of-exps es new-env1)) (new-env2 (val-env->env ve))) (value-of-while cond-exp es new-env2)) 
+      (a-val-env (num-val 1004) new-env1)))))
 
 (define apply-procedure
  (lambda (pr vals) (cases proc pr
