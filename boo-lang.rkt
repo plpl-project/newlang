@@ -6,7 +6,7 @@
 
 (require (lib "eopl.ss" "eopl"))
 
-(define (report-invalid-expression!) (eopl:error 'invalid-expression "this expression is invalid in the current language!"))
+(define (report-invalid-expression! exp) (eopl:error 'invalid-expression "this expression: ~s is invalid in the current language!" exp))
 (define (report-too-few-args-error!) (eopl:error 'invalid-arity "Too few arguments provided."))
 (define (report-too-many-args-error!) (eopl:error 'invalid-arity "Too many arguments provided."))
 
@@ -24,8 +24,11 @@
 (define value-of 
  (lambda (expr env) (cases expression expr
     (scope-exp (scp) 
-        (let ((ve (value-of-exps (scope->exps scp) env)))
-      (a-val-env (val-env->val ve) env)))                  
+          (let ((pre-pool (memory-free-addr-pool mem)) (ve (value-of-exps (scope->exps scp) env)))
+      (begin
+          
+      (set-memory-free-addr-pool! mem pre-pool)                 
+      (a-val-env (val-env->val ve) env))))
     (var-def-exp (tv) 
         (let ((index (newref mem)))
       (a-val-env (num-val index) (extend-env (typevar->var tv) index env)))) 
@@ -56,16 +59,26 @@
     (func-call-exp (func-name args) 
         (let* ((index (apply-env func-name env)) (p-val (get-val mem index)) (vse (value-of-args args env)) 
               (new-env (vals-env->env vse)) (vals (vals-env->vals vse)) 
-              (result-val (apply-procedure (expval->proc p-val) vals))) 
-      (a-val-env result-val new-env)))
+              (pre-pool (memory-free-addr-pool mem))  
+              (result-val (apply-procedure (expval->proc p-val) vals)))
+      (begin 
+      (set-memory-free-addr-pool! mem pre-pool)
+      (a-val-env result-val new-env))))
     (if-then-else-exp (condition then-sp else-sp) 
         (let* ((cond-ve (value-of condition env)) (cond-val (val-env->val cond-ve)) (new-env (val-env->env cond-ve))
                 (cond-bool (expval->bool cond-val)) (then-exps (scope->exps then-sp)) (else-exps (scope->exps else-sp))
+                (pre-pool (memory-free-addr-pool mem)) 
                 (result-ve (if cond-bool (value-of-exps then-exps new-env) (value-of-exps else-exps new-env))) 
                 (result-val (val-env->val result-ve))) 
-      (a-val-env result-val new-env)))
+      (begin 
+      (set-memory-free-addr-pool! mem pre-pool) 
+      (a-val-env result-val new-env))))
     (while-exp (condition body-scp) 
-        (let* ((body-exps (scope->exps body-scp)) (ve (value-of-while condition body-exps env)))
+        (let* ((body-exps (scope->exps body-scp))
+                ; (pre-pool (memory-free-addr-pool mem)) 
+               (ve (value-of-while condition body-exps env)))
+      ; (begin 
+      ; (set-memory-free-addr-pool! mem pre-pool) 
       (a-val-env (val-env->val ve) env)))  
     (PRINT-BOO (e) 
         (let* ((ve (value-of e env)) (val (val-env->val ve)) (new-env (val-env->env ve)))
@@ -224,7 +237,7 @@
                                                     (cons (car lst) (update-list (cdr lst) idx val (+ pos 1))))))])
                       (a-val-env (list-val (update-list lst index new-val 0)) env3)))))))))))
      
-    (else (report-invalid-expression!))))
+    (else (report-invalid-expression! exp))))
   )
 
 (define value-of-exps
@@ -245,11 +258,15 @@
           (a-vals-env (cons val rest-vals) last-env))))))
 
 (define value-of-while
-  (lambda (cond-exp es env) (let* 
+  (lambda (cond-exp es env) (let*  
     ( (cond-ve (value-of cond-exp env)) 
-      (cond-val (val-env->val cond-ve)) (new-env1 (val-env->env cond-ve)) (cond-bool (expval->bool cond-val))) 
+      (cond-val (val-env->val cond-ve)) (new-env1 (val-env->env cond-ve)) (cond-bool (expval->bool cond-val))
+      (pre-pool (memory-free-addr-pool mem))) 
     (if cond-bool 
-      (let* ((ve (value-of-exps es new-env1)) (new-env2 (val-env->env ve))) (value-of-while cond-exp es new-env2)) 
+      (let* ((ve (value-of-exps es new-env1)) (new-env2 (val-env->env ve)))
+            (begin 
+            (set-memory-free-addr-pool! mem pre-pool) 
+            (value-of-while cond-exp es new-env2)))
       (a-val-env (num-val 1004) new-env1)))))
 
 (define apply-procedure

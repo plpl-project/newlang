@@ -50,12 +50,12 @@
           if ((e)) then {
               (a);
           } else {
+              x = (321);
               f(((a) - (10)) (b) (true));
           };
        };
        (42) - (542);
        f((4) (\"salamb\") (false));
-       x = (1);
        f((x) (\" \") (false));
        bool c = (true);
        while(c){
@@ -72,13 +72,15 @@
 (define sp
       "
    { 
-       int x = (0);
+   int x = (0);
+   while ((x) > (x)) {
+   };
 
      
    }       
 ")
 
-(define input (open-input-string simple-program))
+(define input (open-input-string sp))
 
 
 ;(define p (open-input-string program))
