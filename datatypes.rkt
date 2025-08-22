@@ -121,6 +121,17 @@
  (list-val (lst (list-of expval?)))
  (boo-val))
 
+(define (same-type? exp1 exp2)
+  (cases expval exp1
+    (num-val (num) (cases expval exp2 (num-val (num) #t) (else #f)))
+    (bool-val (bool) (cases expval exp2 (bool-val (bool) #t) (else #f)))
+    (string-val (str) (cases expval exp2 (string-val (str) #t) (else #f)))
+    (proc-val (prc) (cases expval exp2 (proc-val (prc) #t) (else #f)))
+    (ref-val (int) (cases expval exp2 (ref-val (int) #t) (else #f)))
+    (list-val (lst) (cases expval exp2 (list-val (lst) #t) (else #f)))
+    (boo-val () (cases expval exp2 (boo-val () #t) (else #f)))
+  )
+)
 
 
  ;expvals to their values

@@ -9,6 +9,7 @@
 (define (report-invalid-expression! exp) (eopl:error 'invalid-expression "this expression: ~s is invalid in the current language!" exp))
 (define (report-too-few-args-error!) (eopl:error 'invalid-arity "Too few arguments provided."))
 (define (report-too-many-args-error!) (eopl:error 'invalid-arity "Too many arguments provided."))
+(define (report-division-by-zero!) (eopl:error 'invalid-divisor "can't divide by zero!"))
 
 
 (define mem (create-memory 1000))
@@ -85,14 +86,6 @@
           (begin
             (displayln (expval->printable val))
       ve)))
-                      
-    (SUBTRACTION (exp1 exp2)
-        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
-               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
-               (num1 (expval->num val1)) (num2 (expval->num val2)) (num-result (- num1 num2))
-               (val-result (num-val num-result)))
-      (a-val-env val-result new-env2)))
-    
     
     (substr-exp (e1 e2 e3)
         (let* ((ve1 (value-of e1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1))
@@ -236,6 +229,163 @@
                                                     (cons val (cdr lst))
                                                     (cons (car lst) (update-list (cdr lst) idx val (+ pos 1))))))])
                       (a-val-env (list-val (update-list lst index new-val 0)) env3)))))))))))
+
+
+    ; inequality only between nums
+    (LESSTHAN (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (bool-result (< num1 num2))
+               (val-result (bool-val bool-result)))
+        (a-val-env val-result new-env2)))
+
+    (GREATERTHAN (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (bool-result (> num1 num2))
+               (val-result (bool-val bool-result)))
+        (a-val-env val-result new-env2)))
+
+    ; equality based on equal? for all types
+    (DOUBLEEQ (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2)) (bool-result (equal? val1 val2))
+               (val-result (bool-val bool-result)))
+        (a-val-env val-result new-env2)))
+
+    (GREATEREQ (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (bool-result (>= num1 num2))
+               (val-result (bool-val bool-result)))
+        (a-val-env val-result new-env2)))
+
+    (LESSEQ (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (bool-result (<= num1 num2))
+               (val-result (bool-val bool-result)))
+        (a-val-env val-result new-env2)))
+    
+    (NOTEQ (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2)) (bool-result (not (equal? val1 val2)))
+               (val-result (bool-val bool-result)))
+        (a-val-env val-result new-env2)))
+
+    (FDIVISION (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1))
+               (num1 (expval->num val1)))
+              (if (zero? num1) (a-val-env (num-val 0) new-env1) ; short circuit division if first term is zero
+                  (let* ((ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+                         (num2 (expval->num val2)))
+                         (if (zero? num2) (report-division-by-zero!) 
+                             (let* ((num-result (/ num1 num2)) (val-result (num-val num-result)))
+                                   (a-val-env val-result new-env2)))))))
+
+    (QDIVISION   (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1))
+               (num1 (expval->num val1)))
+              (if (zero? num1) (a-val-env (num-val 0) new-env1) ; short circuit division if first term is zero
+                  (let* ((ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+                         (num2 (expval->num val2)))
+                         (if (zero? num2) (report-division-by-zero!) 
+                             (let* ((num-result (quotient num1 num2)) (val-result (num-val num-result)))
+                                   (a-val-env val-result new-env2)))))))
+
+    (ADDITION (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (num-result (+ num1 num2))
+               (val-result (num-val num-result)))
+      (a-val-env val-result new-env2)))
+                      
+    (SUBTRACTION (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (num-result (- num1 num2))
+               (val-result (num-val num-result)))
+      (a-val-env val-result new-env2)))
+
+    (MULTIPLY (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1))
+               (num1 (expval->num val1)))
+              (if (zero? num1) (a-val-env (num-val 0) new-env1) ; short circuit multiplication if first term is zero
+                  (let* ((ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+                         (num2 (expval->num val2)) (num-result (* num1 num2)) (val-result (num-val num-result)))
+                         (a-val-env val-result new-env2)))))
+    
+    (REMAINDER (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1))
+               (num1 (expval->num val1)))
+              (if (zero? num1) (a-val-env (num-val 0) new-env1) ; short circuit remainder if first term is zero
+                  (let* ((ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+                         (num2 (expval->num val2)))
+                         (if (zero? num2) (report-division-by-zero!) 
+                             (let* ((num-result (remainder num1 num2)) (val-result (num-val num-result)))
+                                   (a-val-env val-result new-env2)))))))
+    
+    (BINAND (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (num-result (bitwise-and num1 num2))
+               (val-result (num-val num-result)))
+      (a-val-env val-result new-env2)))
+
+    (BINOR (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (num-result (bitwise-ior num1 num2))
+               (val-result (num-val num-result)))
+      (a-val-env val-result new-env2)))
+
+    (BINLSHIFT (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (num-result (arithmetic-shift  num1 num2))
+               (val-result (num-val num-result)))
+      (a-val-env val-result new-env2)))
+
+    (BINRSHIFT (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) 
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+               (num1 (expval->num val1)) (num2 (expval->num val2)) (num-result (arithmetic-shift  num1 (- num2)))
+               (val-result (num-val num-result)))
+      (a-val-env val-result new-env2)))
+
+    (BNEGATION (exp1)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1))
+               (num1 (expval->num val1)) (num-result (bitwise-not num1))
+               (val-result (num-val num-result)))
+      (a-val-env val-result new-env1)))
+
+    (NOTNOT (exp1)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1))
+               (bool1 (expval->bool val1)) (bool-result (not bool1))
+               (val-result (bool-val bool-result)))
+      (a-val-env val-result new-env1)))
+    
+    (ANDOP (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) (bool1 (expval->bool val1)))
+              (if (not bool1) (a-val-env (bool-val #f) new-env1) ; short circuit 'and' if first exp is false
+               (let* ((ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+                (bool2 (expval->bool val2)) (bool-result (and bool1 bool2))
+                (val-result (bool-val bool-result)))
+               (a-val-env val-result new-env2)))))
+
+    (OROP (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) (bool1 (expval->bool val1)))
+              (if bool1 (a-val-env (bool-val #t) new-env1) ; short circuit 'or' if first exp is true
+               (let* ((ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+                (bool2 (expval->bool val2)) (bool-result (or bool1 bool2))
+                (val-result (bool-val bool-result)))
+               (a-val-env val-result new-env2)))))
+    
+    (XOROP (exp1 exp2)
+        (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1)) (bool1 (expval->bool val1))
+               (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
+                (bool2 (expval->bool val2)) (bool-result (xor bool1 bool2)) (val-result (bool-val bool-result)))
+               (a-val-env val-result new-env2)))
      
     (else (report-invalid-expression! exp))))
   )
