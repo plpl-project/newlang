@@ -30,7 +30,7 @@
   [letter       (:or (char-range #\a #\z) (char-range #\A #\Z))]
   
   ; Identifiers and types
-  [type         (:: (:* "list_of ") (:or  "bool" "string" "void" "num" "char" "method"))]
+  [type         (:: (:* "list_of ") (:or "int" "bool" "string" "void" "float" "char" "method"))]
   [identifier   (:seq letter (:* (:or letter digit #\_)))]
 
   

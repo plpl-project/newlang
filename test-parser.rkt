@@ -18,21 +18,21 @@
        x[98][9][0] = (2);
        {
        a;
-       int x = (0);
+       num x = (0);
        if (false) then {
            if ((3) xor (2))
            then
            {/=\\(\"kal\");};
-       } else {int y = ((9));};
+       } else {num y = ((9));};
        };
 
        char ch = (\"p\");
        
        {a;b;c;};
 
-       list_of list_of int func f (int a, string b, bool e)
+       list_of list_of num func f (num a, string b, bool e)
        {
-           int a = (list((3)(3)(4)));
+           num a = (list((3)(3)(4)));
            a[not(4)];
        };
 
@@ -45,8 +45,8 @@
 (define simple-program
       "
    { 
-       float x = (0);
-       int func f(int a, string b, bool e){
+       num x = (0);
+       num func f(num a, string b, bool e){
           if ((e)) then {
               (a);
           } else {
@@ -59,7 +59,7 @@
        f((x) (\" \") (false));
        bool c = (true);
        while(c){
-           int x = ((x) - (12));
+           num x = ((x) - (12));
            /=\\(x);
            c = (false);
        };
@@ -72,16 +72,16 @@
 (define sp
       "
    { 
-   list_of int y = (list ((0) (3)));
+   list_of num y = (list ((0) (3.54)));
    y = (cdr (y));
-   int x = (car (y));
+   num x = (car (y));
    y = (append (y) (list ((0) (3))));
    }       
 ")
 
 
 
-(define input (open-input-string simple-program))
+(define input (open-input-string sp))
 
 
 ;(define p (open-input-string program))
