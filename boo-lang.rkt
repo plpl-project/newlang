@@ -3,6 +3,8 @@
 (require "datatypes.rkt")
 (require "environment.rkt")
 (require "memory.rkt")
+(require "type-check.rkt")
+
 
 (require (lib "eopl.ss" "eopl"))
 
@@ -17,7 +19,9 @@
 (define value-of-program
  (lambda (pgm) (cases prog pgm
     (a-program (scp)
-               (val-env->val (value-of (scope-exp scp) (init-env))))))) 
+               (begin 
+               (type-of (scope-exp scp) (init-type-env))
+               (val-env->val (value-of (scope-exp scp) (init-env)))))))) 
 
 
 
@@ -411,11 +415,12 @@
   (lambda (cond-exp es env) (let*  
     ( (cond-ve (value-of cond-exp env)) 
       (cond-val (val-env->val cond-ve)) (new-env1 (val-env->env cond-ve)) (cond-bool (expval->bool cond-val))
-      (pre-pool (memory-free-addr-pool mem))) 
+      (pre-pool (memory-free-addr-pool mem))
+      ) 
     (if cond-bool 
       (let* ((ve (value-of-exps es new-env1)) (new-env2 (val-env->env ve)))
             (begin 
-            (set-memory-free-addr-pool! mem pre-pool) 
+            (set-memory-free-addr-pool! mem pre-pool)
             (value-of-while cond-exp es new-env2)))
       (a-val-env (num-val 1004) new-env1)))))
 

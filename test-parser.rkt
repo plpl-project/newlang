@@ -72,29 +72,14 @@
 (define sp
       "
    { 
-   int x = (0);
-   while ((x) > (x)) {
-   };
-
-     
+   list_of int y = (list ((0) (3)));
+   y = (cdr (y));
+   int x = (car (y));
+   y = (append (y) (list ((0) (3))));
    }       
 ")
 
 
-(define test-arithmetic-logic-ops
-  "{
-    float i = (23.5);
-    float p = (240);
-
-    float result = (((i) + (p)) * (2));
-
-    int a = (10);
-    int b = (9);
-    int abandb = ((10) & (9));
-
-    (not ((a) < (b)));
-    
-  }")
 
 (define input (open-input-string simple-program))
 

@@ -1,2 +1,0 @@
-1. handle recursive functions
-2. shift variables into implicit reference base
