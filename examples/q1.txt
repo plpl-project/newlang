@@ -1,0 +1,77 @@
+{
+    list_of num list1 = (list ((7) (11) (20) (16) (14) (1)));
+    list_of string list2 = (list (("111") ("10000") ("10001001") ("10111") ("1100") ("0")));
+
+    bool func ismember (list_of num l, num x)
+    {
+        num index = (0);
+        num len = (how-long((l)));
+        while ((index) < (len))
+        {
+            if ((l[index]) == (x)) then
+            {
+                index = (len);
+                (true);
+            }
+            else
+            {
+                index = ((index) + (1));
+                (false);
+            };
+        };
+        (false);
+    };
+
+    num func toint (string x)
+    {
+        num result = (0);
+        num len = (string-length ((x)));
+        num index = (0);
+        while ((index) < (len))
+        {
+            if ((string-at (x) (index)) == ("1")) then
+            {
+                result = ((result) + (1));
+            }
+            else
+            {
+                result;
+            };
+            result = ((result) * (2));
+        };
+        (result);
+    };
+
+    num index = (0);
+    num len = (how-long ((list2)));
+    num even = (1);
+    num odd = (1);
+    num l2_member;
+    /=\(list2[1]);
+
+    while ((index) < (len))
+    {
+        index = (len);
+        num i = (index);
+        
+        l2_member = (toint((list2[index])));
+    
+        if (ismember((list1) (l2_member))) then
+        {
+            if (((l2_member) % (2)) == (0)) then
+            {
+                even = ((even) * (l2_member));
+            }
+            else
+            {
+                odd = ((odd) * (l2_member));
+            };
+        }
+        else {
+           num m = (0);
+        };
+        
+    };
+
+    /=\ ((even) + (odd));
+}

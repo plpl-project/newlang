@@ -263,7 +263,7 @@
             (env2 (a-type-env-env r)))
         (unless (type-list? t)
         (report-type-error! "how-long expects list, got ~s" t))
-        (a-type-env (list-elem-type t) env2)))
+        (a-type-env "num" env2)))
 
     (empty-exp (list-exp)
         (let* ((r (type-of list-exp tenv))
@@ -271,7 +271,7 @@
             (env2 (a-type-env-env r)))
         (unless (type-list? t)
         (report-type-error! "is-empty expects list, got ~s" t))
-        (a-type-env (list-elem-type t) env2)))
+        (a-type-env "bool" env2)))
 
     
 
@@ -279,17 +279,17 @@
     (return-arr-val (a-list index-exp)
       (let* ((r1 (type-of a-list tenv)) (t1 (a-type-env-type r1)) (env1 (a-type-env-env r1))
              (r2 (type-of index-exp env1)) (t2 (a-type-env-type r2)) (env2 (a-type-env-env r2)))
-        (unless (and (pair? t1) (eq? (car t1) 'list)) (report-type-error! "indexing expects list/array, got ~s" t1))
+        (unless (type-list? t1) (report-type-error! "indexing expects list/array, got ~s" t1))
         (unless (type-equal? t2 "num") (report-type-error! "array index must be num, got ~s" t2))
-        (a-type-env (cadr t1) env2)))
+        (a-type-env (list-elem-type t1) env2)))
 
     (assign-arr-val (a-list index-exp value-exp)
       (let* ((r1 (type-of a-list tenv)) (t1 (a-type-env-type r1)) (env1 (a-type-env-env r1))
              (r2 (type-of index-exp env1)) (t2 (a-type-env-type r2)) (env2 (a-type-env-env r2))
              (r3 (type-of value-exp env2)) (t3 (a-type-env-type r3)) (env3 (a-type-env-env r3)))
-        (unless (and (pair? t1) (eq? (car t1) 'list)) (report-type-error! "array assign expects list/array, got ~s" t1))
+        (unless (type-list? t1) (report-type-error! "array assign expects list/array, got ~s" t1))
         (unless (type-equal? t2 "num") (report-type-error! "array index must be num, got ~s" t2))
-        (unless (type-equal? (cadr t1) t3) (report-type-error! "assign-arr: value type ~s doesn't match array element type ~s" t3 (cadr t1)))
+        (unless (type-equal? (list t1) t3) (report-type-error! "assign-arr: value type ~s doesn't match array element type ~s" t3 (cadr t1)))
         (a-type-env t3 env3)))
 
     (LESSTHAN (exp1 exp2)
