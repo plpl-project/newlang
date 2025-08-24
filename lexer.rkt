@@ -18,6 +18,8 @@
    CONS CAR CDR APPEND LIST
    SUBSTRING STRING-APPEND STRING-LENGTH STRING-SET STRING-AT
    PRINT
+   LEN
+   IS-EMPTY
    EOF))
 
 (define-tokens value-tokens
@@ -111,6 +113,8 @@
     ["string-at" (token-STRING-AT)]
     ["string-set" (token-STRING-SET)]
     ["/=\\" (token-PRINT)]
+    ["how-long" (token-LEN)]
+    ["is-empty" (token-IS-EMPTY)]
     [(:: #\/ #\*)
      (comment-lexer input-port)]
     

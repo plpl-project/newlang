@@ -8,9 +8,12 @@
 
 
 
+(define path "examples/q1.txt")
+(define (run filename)
+    (value-of-program (full-parser (lex-this my-lexer (open-input-file filename)))))
+(run path)
 
-
-
+#|
 (define program
       "
        { 
@@ -79,15 +82,8 @@
    }       
 ")
 
-
-
 (define input (open-input-string sp))
-
-
-;(define p (open-input-string program))
-
+(define p (open-input-string program))
 (define AST (full-parser (lex-this my-lexer input)))
-
 (value-of-program AST)
-
-
+|#

@@ -99,11 +99,14 @@
      [(LPAREN exp RPAREN XOR LPAREN exp RPAREN) (XOROP $2 $6)]
      [(NOT LPAREN exp RPAREN) (NOTNOT $3)]
      [(BNEG LPAREN exp RPAREN) (BNEGATION $3)]
+     [(MINUS parexp) (NEGATION $2)]
 
      ;; Array Implememntation
      [(exp LBRACK exp RBRACK) (return-arr-val $1 $3)]
      [(exp LBRACK exp RBRACK ASSIGN parexp) (assign-arr-val $1 $3 $6)]
 
+     [(LEN parexp) (len-exp $2)]
+     [(IS-EMPTY parexp) (empty-exp $2)]
      ;; Print
      [(PRINT parexp) (PRINT-BOO $2)])
 
@@ -111,6 +114,7 @@
      ((LIST LPAREN RPAREN) (LIST-EXP (empty-exps)))
      ((LIST LPAREN args RPAREN) (LIST-EXP $3))
      )
+
    )))
      
 

@@ -257,6 +257,24 @@
         (report-type-error! "cdr expects list, got ~s" t))
         (a-type-env (string->type t) env2)))
 
+    (len-exp (list-exp)
+        (let* ((r (type-of list-exp tenv))
+            (t (a-type-env-type r))
+            (env2 (a-type-env-env r)))
+        (unless (type-list? t)
+        (report-type-error! "how-long expects list, got ~s" t))
+        (a-type-env (list-elem-type t) env2)))
+
+    (empty-exp (list-exp)
+        (let* ((r (type-of list-exp tenv))
+            (t (a-type-env-type r))
+            (env2 (a-type-env-env r)))
+        (unless (type-list? t)
+        (report-type-error! "is-empty expects list, got ~s" t))
+        (a-type-env (list-elem-type t) env2)))
+
+    
+
 
     (return-arr-val (a-list index-exp)
       (let* ((r1 (type-of a-list tenv)) (t1 (a-type-env-type r1)) (env1 (a-type-env-env r1))
@@ -305,6 +323,7 @@
     (BINLSHIFT (exp1 exp2) (numeric-binary-type " << " exp1 exp2 tenv))
     (BINRSHIFT (exp1 exp2) (numeric-binary-type " >> " exp1 exp2 tenv))
     (BNEGATION (exp1) (numeric-unary-type "~" exp1 tenv))
+    (NEGATION (exp1) (numeric-unary-type "-" exp1 tenv))
 
     (NOTNOT (exp1)
       (let* ((r (type-of exp1 tenv)) (t (a-type-env-type r)) (env1 (a-type-env-env r)))

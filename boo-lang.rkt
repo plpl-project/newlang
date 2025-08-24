@@ -12,6 +12,7 @@
 (define (report-too-few-args-error!) (eopl:error 'invalid-arity "Too few arguments provided."))
 (define (report-too-many-args-error!) (eopl:error 'invalid-arity "Too many arguments provided."))
 (define (report-division-by-zero!) (eopl:error 'invalid-divisor "can't divide by zero!"))
+(define (report-not-list-error!) (eopl:error 'not-list "can't apply list function to non-list value!"))
 
 
 (define mem (create-memory 1000))
@@ -390,7 +391,23 @@
                (ve2 (value-of exp2 new-env1)) (val2 (val-env->val ve2)) (new-env2 (val-env->env ve2))
                 (bool2 (expval->bool val2)) (bool-result (xor bool1 bool2)) (val-result (bool-val bool-result)))
                (a-val-env val-result new-env2)))
-     
+
+    (len-exp (exp1)
+      (let* ([ve1 (value-of exp1 env)] [val1 (val-env->val ve1)] [new-env1 (val-env->env ve1)])
+        (cases expval val1
+          (list-val (lst) (a-val-env (num-val (length lst)) new-env1))
+          (else (report-not-list-error!))
+    )))
+    (empty-exp (exp1)
+      (let* ([ve1 (value-of exp1 env)] [val1 (val-env->val ve1)] [new-env1 (val-env->env ve1)])
+        (cases expval val1
+          (list-val (lst) (a-val-env (bool-val (empty? lst)) new-env1))
+          (else (report-not-list-error!))
+    )))
+    (NEGATION (exp1)
+      (let* ((ve1 (value-of exp1 env)) (val1 (val-env->val ve1)) (new-env1 (val-env->env ve1))
+                (num1 (expval->num val1)))
+            (a-val-env (num-val (- 0 num1)) new-env1)))
     (else (report-invalid-expression! exp))))
   )
 

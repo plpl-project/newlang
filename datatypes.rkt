@@ -75,7 +75,10 @@
   (OROP (left expression?) (right expression?))
   (XOROP (left expression?) (right expression?))
   (return-arr-val (a-list expression?) (index expression?)) 
-  (assign-arr-val (a-list expression?) (index expression?) (value expression?))) 
+  (assign-arr-val (a-list expression?) (index expression?) (value expression?))
+  (len-exp (e expression?)) 
+  (empty-exp (e expression?))
+  (NEGATION (e expression?)))
   ;() CONST
 
 (define-datatype LISTEXP LISTEXP?
