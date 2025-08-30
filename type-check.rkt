@@ -53,7 +53,11 @@
 
 
 (define (type-equal? t1 t2)
-  (equal? (string->type t1) (string->type t2)))
+  (let ((t1 (string->type t1)) (t2 (string->type t2)))
+    (cond 
+      ((and (type-list? t1) (type-list? t2)) 
+        (or (equal? (list-elem-type t1) "void") (equal? (list-elem-type t2) "void") (equal? t1 t2)))
+    (else (equal? t1 t2)))))
 
 
 
@@ -289,8 +293,8 @@
              (r3 (type-of value-exp env2)) (t3 (a-type-env-type r3)) (env3 (a-type-env-env r3)))
         (unless (type-list? t1) (report-type-error! "array assign expects list/array, got ~s" t1))
         (unless (type-equal? t2 "num") (report-type-error! "array index must be num, got ~s" t2))
-        (unless (type-equal? (list t1) t3) (report-type-error! "assign-arr: value type ~s doesn't match array element type ~s" t3 (cadr t1)))
-        (a-type-env t3 env3)))
+        (unless (type-equal? (list-elem-type t1) t3) (report-type-error! "assign-arr: value type ~s doesn't match array element type ~s" t3 (cadr t1)))
+        (a-type-env t1 env3)))
 
     (LESSTHAN (exp1 exp2)
       (numeric-compare-type " < " exp1 exp2 tenv))
