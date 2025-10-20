@@ -1,4 +1,11 @@
 {
+    list_of list_of string board = (list((list(("-") ("X") ("-") ("-") ("X") ("O")))
+                                         (list(("X") ("O") ("X") ("-") ("-") ("O")))
+                                         (list(("-") ("-") ("X") ("O") ("-") ("X")))
+                                         (list(("-") ("X") ("-") ("X") ("X") ("O")))
+                                         (list(("O") ("O") ("-") ("-") ("X") ("-")))
+                                         (list(("-") ("-") ("-") ("-") ("-") ("X")))));
+
     num SIZE = (6);
 
     bool func in_range(num idx)
@@ -41,12 +48,7 @@
             (false);
         };
     };
-    list_of list_of string board = (list((list(("-") ("X") ("-") ("-") ("X") ("O")))
-                                         (list(("O") ("O") ("X") ("-") ("-") ("O")))
-                                         (list(("-") ("-") ("X") ("O") ("-") ("O")))
-                                         (list(("-") ("X") ("X") ("X") ("X") ("O")))
-                                         (list(("O") ("O") ("-") ("-") ("X") ("-")))
-                                         (list(("-") ("-") ("-") ("-") ("-") ("X")))));
+
 
     list_of num row_dirs = (list((0) (1) (1)));
     list_of num col_dirs = (list((1) (0) (1)));

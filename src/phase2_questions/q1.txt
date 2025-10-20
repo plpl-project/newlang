@@ -1,0 +1,21 @@
+{
+    num x = (123450);
+    /* num x = (-(23)); */
+
+    if ((x) < (0)) then
+    {
+        /=\ ("you should provide a non-negative number!");
+        (0);
+    }
+    else
+    {
+        num result = (0);
+        while ((x) != (0))
+        {
+            result = ((result) * (10));
+            result = ((result) + ((x) % (10)));
+            x = ((x) // (10));
+        };
+        /=\ (result);
+    };
+}

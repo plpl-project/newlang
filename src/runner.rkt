@@ -8,7 +8,7 @@
 
 
 
-(define path "examples/q5.txt")
+(define path "phase2_questions/q4.txt")
 (define (run filename)
     (value-of-program (full-parser (lex-this my-lexer (open-input-file filename)))))
 (run path)

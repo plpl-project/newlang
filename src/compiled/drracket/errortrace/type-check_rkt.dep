@@ -1,0 +1,1 @@
+("8.15" ta6nt ("39e8ddd4118b731de4392b0a3eb9de4c87156e7e" . "408733fab2c8c606fa6e9afb1a3fdeb5cb0117ec") #"C:\\am21\\univesity\\sixth_semester\\PL\\project\\newlang\\src\\datatypes.rkt" (collects #"drracket" #"private" #"drracket-errortrace-key.rkt") (collects #"eopl" #"eopl.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
